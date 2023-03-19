@@ -29,7 +29,7 @@ export const getFeroKernels = () => {
             if (newValue <= 0) {
                 feros[(i, j)][0] = 0;
             } else {
-                feros[(i, j)][0] = total / 9 - feroDecay;
+                feros[(i, j)][0] = newValue;
             }
         }
     });

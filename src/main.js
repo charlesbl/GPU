@@ -7,21 +7,19 @@ import {
     getFerosInDirection,
 } from "./tracer";
 import { getFeros, getFeroKernels } from "./fero";
+import { initSettingsPanel } from "./settings";
 
 const SIZE = 950;
-const NB_TRACERS = 1_000_000;
+const NB_TRACERS = 5_000_000;
 
-let feroDecay = 0.01;
-let speed = 1;
-let viewDistance = 20;
-let viewAngle = Math.PI / 4;
-let turnForce = Math.PI / 5;
-
-window.setFeroDecay = (value) => (feroDecay = value);
-window.setSpeed = (value) => (speed = value);
-window.setViewDistance = (value) => (viewDistance = value);
-window.setViewAngle = (value) => (viewAngle = value);
-window.setTurnForce = (value) => (turnForce = value);
+const [feroDecay, speed, viewDistance, viewAngle, turnForce] =
+    initSettingsPanel([
+        ["feroDecay", 0.01],
+        ["speed", 1],
+        ["viewDistance", 5],
+        ["viewAngle", Math.PI / 4],
+        ["turnForce", Math.PI / 4],
+    ]);
 
 await ti.init();
 
@@ -74,15 +72,20 @@ const canvas = new ti.Canvas(htmlCanvas);
 
 let frameCount = 0;
 async function frame() {
-    diffuseFero(feroDecay);
-    computeTracers(speed, viewDistance, viewAngle, turnForce);
+    diffuseFero(feroDecay.value);
+    computeTracers(
+        speed.value,
+        viewDistance.value,
+        viewAngle.value,
+        turnForce.value
+    );
     draw();
     canvas.setImage(pixels);
     requestAnimationFrame(frame);
     frameCount++;
     if (frameCount % 100 === 0) {
-        console.timeEnd();
-        console.time();
+        console.timeEnd("100 frames");
+        console.time("100 frames");
     }
 }
 initFero();

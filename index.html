@@ -3,9 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <title>GPU test</title>
+    <script type="module" src="src/main.js"></script>
+    <style>
+      .main {
+        display: flex;
+      }
+      .settings {
+        display: grid;
+        grid-template-columns: 10fr 10fr 2fr;
+        grid-template-rows: repeat(10, 1.5em);
+      }
+    </style>
   </head>
   <body style="margin: 0;">
-    <canvas id="result_canvas"></canvas>
-    <script type="module" src="src/main.js"></script>
+    <div class="main">
+      <canvas id="result_canvas"></canvas>
+      <div class="settings">
+        <label>feroDecay: </label>
+        <input type="number" id="feroDecay" step="0.001"/>
+        <button>Set</button>
+        <label>speed: </label>
+        <input type="number" id="speed" step="0.1"/>
+        <button>Set</button>
+        <label>viewDistance: </label>
+        <input type="number" id="viewDistance" step="1"/>
+        <button>Set</button>
+        <label>viewAngle: </label>
+        <input type="number" id="viewAngle" step="0.01"/>
+        <button>Set</button>
+        <label>turnForce: </label>
+        <input type="number" id="turnForce" step="0.01"/>
+        <button>Set</button>
+      </div>
+    </div>
   </body>
 </html>

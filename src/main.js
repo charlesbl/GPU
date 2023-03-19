@@ -72,21 +72,21 @@ const canvas = new ti.Canvas(htmlCanvas);
 
 let frameCount = 0;
 async function frame() {
-    diffuseFero(feroDecay.value);
-    computeTracers(
-        speed.value,
-        viewDistance.value,
-        viewAngle.value,
-        turnForce.value
-    );
+    console.timeEnd("frame");
+    console.time("frame");
+    for (let i = 0; i < 5; i++) {
+        diffuseFero(feroDecay.value);
+        computeTracers(
+            speed.value,
+            viewDistance.value,
+            viewAngle.value,
+            turnForce.value
+        );
+    }
     draw();
     canvas.setImage(pixels);
-    requestAnimationFrame(frame);
     frameCount++;
-    if (frameCount % 100 === 0) {
-        console.timeEnd("100 frames");
-        console.time("100 frames");
-    }
+    requestAnimationFrame(frame);
 }
 initFero();
 initTracers();

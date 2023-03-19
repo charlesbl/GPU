@@ -80,6 +80,8 @@ export const getTracerKernels = () => {
                 } else if (rightFeros > frontFeros && rightFeros > leftFeros) {
                     orientation += turnForce;
                 }
+                // TODO add randomness
+                // orientation += ((Math.random() - 0.5) * Math.PI) / 10;
 
                 const newX = clampPos(x + Math.cos(orientation) * speed);
                 const newY = clampPos(y + Math.sin(orientation) * speed);

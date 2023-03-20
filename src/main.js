@@ -1,16 +1,16 @@
 import "taichi.js/dist/taichi.umd";
 import {
-    getTracers,
-    getTracerKernels,
+    getAnts,
+    getAntKernels,
     clampPos,
     getFerosAround,
     getFerosInDirection,
-} from "./tracer";
+} from "./ants";
 import { getFeros, getFeroKernels } from "./fero";
 import { initSettingsPanel } from "./settings";
 
 const SIZE = 950;
-const NB_TRACERS = 6_000_000;
+const NB_ANTS = 1_000;
 
 const [
     updatePerFrame,
@@ -21,8 +21,8 @@ const [
     turnForce,
     showAgent,
 ] = initSettingsPanel([
-    ["updatePerFrame", 20],
-    ["feroDecay", 0.01],
+    ["updatePerFrame", 1],
+    ["feroDecay", 0.0001],
     ["speed", 1],
     ["viewDistance", 5],
     ["viewAngle", Math.PI / 4],
@@ -34,51 +34,60 @@ await ti.init();
 
 const pixels = ti.Vector.field(3, ti.f32, [SIZE, SIZE]);
 const feros = getFeros(SIZE);
-const feros2 = getFeros(SIZE);
-const tracers = getTracers(NB_TRACERS);
+const ants = getAnts(NB_ANTS);
 
 window.feros = feros;
 
 ti.addToKernelScope({
-    tracers,
+    ants,
     feros,
-    feros2,
     pixels,
     SIZE,
-    NB_TRACERS,
+    NB_ANTS,
     clampPos,
     getFerosAround,
     getFerosInDirection,
 });
 
-const { initFero, diffuseFero } = getFeroKernels(feros);
-const { computeTracers, initTracers } = getTracerKernels(tracers, feros);
+const { initFero, diffuseFero } = getFeroKernels();
+const { computeAnts, initAnts } = getAntKernels();
 
 const drawFero = ti.kernel(() => {
     for (let I of ndrange(SIZE, SIZE)) {
         const i = I[0];
         const j = I[1];
 
-        pixels[(i, j)][0] = feros[(i, j)][0];
-        pixels[(i, j)][1] = 0;
-        pixels[(i, j)][2] = 0;
+        if (feros[(i, j)][2] > 0) {
+            pixels[(i, j)][0] = 1;
+            pixels[(i, j)][1] = 1;
+            pixels[(i, j)][2] = 0;
+        } else if (feros[(i, j)][2] < 0) {
+            pixels[(i, j)][0] = 1;
+            pixels[(i, j)][1] = 0;
+            pixels[(i, j)][2] = 1;
+        } else {
+            pixels[(i, j)][0] = feros[(i, j)][0];
+            pixels[(i, j)][1] = feros[(i, j)][1];
+            pixels[(i, j)][2] = 0;
+        }
     }
 });
 
-const drawAgent = ti.kernel(() => {
-    for (let I of ndrange(NB_TRACERS)) {
+const drawAnts = ti.kernel(() => {
+    for (let I of ndrange(NB_ANTS)) {
         const i = I[0];
 
-        const x1 = i32(tracers[i][0]);
-        const y1 = i32(tracers[i][1]);
-        pixels[(x1, y1)][0] = 0;
+        const x1 = i32(ants[i][0]);
+        const y1 = i32(ants[i][1]);
+        pixels[(x1, y1)][0] = 1;
         pixels[(x1, y1)][1] = 1;
-        pixels[(x1, y1)][2] = 0;
+        pixels[(x1, y1)][2] = 1;
     }
 });
+
 const drawPixels = () => {
     drawFero();
-    if (showAgent.value === 1) drawAgent();
+    if (showAgent.value === 1) drawAnts();
 };
 
 const htmlCanvas = document.getElementById("result_canvas");
@@ -105,7 +114,7 @@ let frameCount = 0;
 async function frame() {
     for (let i = 0; i < updatePerFrame.value; i++) {
         diffuseFero(feroDecay.value);
-        computeTracers(
+        computeAnts(
             speed.value,
             viewDistance.value,
             viewAngle.value,
@@ -118,7 +127,7 @@ async function frame() {
     requestAnimationFrame(frame);
 }
 initFero();
-initTracers();
+initAnts();
 
 console.time();
 requestAnimationFrame(frame);

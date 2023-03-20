@@ -4,7 +4,7 @@ The goal of this project is to recreate a "slime simulation" like in the [coding
 
 Taichi.js uses the WIP [WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/) API, check the documentation to enable it on your browser.
 
-This project was developed on a GTX 1080ti, if your GPU has more or less VRAM you can play with the size of the simulation and the amount of tracers, and if it is less or more powerful you can play with the amount update per frame.
+This project was developed on a GTX 1080ti, if your GPU has more or less VRAM you can play with the size of the simulation and the amount of ants, and if it is less or more powerful you can play with the amount update per frame.
 
 ## Installation
 

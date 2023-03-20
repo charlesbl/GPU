@@ -2,7 +2,7 @@ export const getTracers = (nbTracers) =>
     ti.Vector.field(3, ti.f32, [nbTracers]);
 
 export const clampPos = (value) => {
-    const result = value;
+    let result = value;
     if (value < 0) {
         result = value + SIZE;
     } else if (value >= SIZE) {
@@ -51,7 +51,7 @@ export const getTracerKernels = () => {
 
                 const x = tracers[i][0];
                 const y = tracers[i][1];
-                const orientation = tracers[i][2];
+                let orientation = tracers[i][2];
 
                 const leftFeros = getFerosInDirection(
                     feros,

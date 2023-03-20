@@ -19,6 +19,13 @@
     <div class="main">
       <canvas id="result_canvas"></canvas>
       <div class="settings">
+        <span style=" grid-column: 1 / 2;">FPS: </span>
+        <span id="fps" style=" grid-column: 2 / 4;">30</span>
+        <span style=" grid-column: 1 / 2;">UPS: </span>
+        <span id="ups" style=" grid-column: 2 / 4;">30</span>
+        <label>updatePerFrame: </label>
+        <input type="number" id="updatePerFrame" step="1" min="1"/>
+        <button>Set</button>
         <label>feroDecay: </label>
         <input type="number" id="feroDecay" step="0.001"/>
         <button>Set</button>
@@ -33,6 +40,9 @@
         <button>Set</button>
         <label>turnForce: </label>
         <input type="number" id="turnForce" step="0.01"/>
+        <button>Set</button>
+        <label>showAgent: </label>
+        <input type="number" id="showAgent" step="1" min="0" max="1"/>
         <button>Set</button>
       </div>
     </div>

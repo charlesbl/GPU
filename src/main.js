@@ -10,7 +10,7 @@ import { getFeros, getFeroKernels } from "./fero";
 import { initSettingsPanel } from "./settings";
 
 const SIZE = 950;
-const NB_TRACERS = 6_000_000;
+const NB_TRACERS = 1_000_000;
 
 const [
     updatePerFrame,
@@ -21,13 +21,13 @@ const [
     turnForce,
     showAgent,
 ] = initSettingsPanel([
-    ["updatePerFrame", 20],
-    ["feroDecay", 0.01],
+    ["updatePerFrame", 1],
+    ["feroDecay", 0.001],
     ["speed", 1],
     ["viewDistance", 5],
     ["viewAngle", Math.PI / 4],
     ["turnForce", Math.PI / 4],
-    ["showAgent", 1],
+    ["showAgent", 0],
 ]);
 
 await ti.init();
@@ -102,15 +102,21 @@ const updateFPS = () => {
 };
 
 let frameCount = 0;
+let framesSkip = 0;
 async function frame() {
-    for (let i = 0; i < updatePerFrame.value; i++) {
-        diffuseFero(feroDecay.value);
-        computeTracers(
-            speed.value,
-            viewDistance.value,
-            viewAngle.value,
-            turnForce.value
-        );
+    if (updatePerFrame.value < 1 && framesSkip < 1) {
+        framesSkip += updatePerFrame.value;
+    } else {
+        for (let i = 0; i < updatePerFrame.value; i++) {
+            diffuseFero(feroDecay.value);
+            computeTracers(
+                speed.value,
+                viewDistance.value,
+                viewAngle.value,
+                turnForce.value
+            );
+            framesSkip = 0;
+        }
     }
     drawPixels();
     canvas.setImage(pixels);

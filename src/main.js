@@ -1,85 +1,47 @@
 import "taichi.js/dist/taichi.umd";
-import {
-    getTracers,
-    getTracerKernels,
-    clampPos,
-    getFerosAround,
-    getFerosInDirection,
-} from "./tracer";
-import { getFeros, getFeroKernels } from "./fero";
+import { getBalls, getBallsKernels, clampPos } from "./balls";
 import { initSettingsPanel } from "./settings";
 
 const SIZE = 950;
-const NB_TRACERS = 1_000_000;
+const NB_BALLS = 100000;
 
-const [
-    updatePerFrame,
-    feroDecay,
-    speed,
-    viewDistance,
-    viewAngle,
-    turnForce,
-    showAgent,
-] = initSettingsPanel([
-    ["updatePerFrame", 1],
-    ["feroDecay", 0.001],
-    ["speed", 1],
-    ["viewDistance", 5],
-    ["viewAngle", Math.PI / 4],
-    ["turnForce", Math.PI / 4],
-    ["showAgent", 0],
-]);
+const [updatePerFrame] = initSettingsPanel([["updatePerFrame", 1]]);
 
 await ti.init();
 
 const pixels = ti.Vector.field(3, ti.f32, [SIZE, SIZE]);
-const feros = getFeros(SIZE);
-const feros2 = getFeros(SIZE);
-const tracers = getTracers(NB_TRACERS);
-
-window.feros = feros;
+const balls = getBalls(NB_BALLS);
 
 ti.addToKernelScope({
-    tracers,
-    feros,
-    feros2,
+    balls,
     pixels,
     SIZE,
-    NB_TRACERS,
+    NB_BALLS,
     clampPos,
-    getFerosAround,
-    getFerosInDirection,
 });
 
-const { initFero, diffuseFero } = getFeroKernels(feros);
-const { computeTracers, initTracers } = getTracerKernels(tracers, feros);
+const { computeBalls, initBalls } = getBallsKernels();
 
-const drawFero = ti.kernel(() => {
+const drawBalls = ti.kernel(() => {
     for (let I of ndrange(SIZE, SIZE)) {
         const i = I[0];
         const j = I[1];
-
-        pixels[(i, j)][0] = feros[(i, j)][0];
+        pixels[(i, j)][0] = 0;
         pixels[(i, j)][1] = 0;
         pixels[(i, j)][2] = 0;
     }
-});
-
-const drawAgent = ti.kernel(() => {
-    for (let I of ndrange(NB_TRACERS)) {
+    for (let I of ndrange(NB_BALLS)) {
         const i = I[0];
 
-        const x1 = i32(tracers[i][0]);
-        const y1 = i32(tracers[i][1]);
-        pixels[(x1, y1)][0] = 0;
-        pixels[(x1, y1)][1] = 1;
-        pixels[(x1, y1)][2] = 0;
+        const x1 = i32(balls[i][0]);
+        const y1 = i32(balls[i][1]);
+        if (!(x1 < 0 || x1 >= SIZE || y1 < 0 || y1 >= SIZE)) {
+            pixels[(x1, y1)][0] = 0;
+            pixels[(x1, y1)][1] = 1;
+            pixels[(x1, y1)][2] = 0;
+        }
     }
 });
-const drawPixels = () => {
-    drawFero();
-    if (showAgent.value === 1) drawAgent();
-};
 
 const htmlCanvas = document.getElementById("result_canvas");
 htmlCanvas.width = SIZE;
@@ -98,7 +60,6 @@ const updateFPS = () => {
     fpsDiv.innerText = fps.toFixed(1);
     upsDiv.innerText = (fps * updatePerFrame.value).toFixed(1);
     frameTime = Date.now();
-    console.log("updateFPS");
 };
 
 let frameCount = 0;
@@ -108,23 +69,16 @@ async function frame() {
         framesSkip += updatePerFrame.value;
     } else {
         for (let i = 0; i < updatePerFrame.value; i++) {
-            diffuseFero(feroDecay.value);
-            computeTracers(
-                speed.value,
-                viewDistance.value,
-                viewAngle.value,
-                turnForce.value
-            );
+            computeBalls();
             framesSkip = 0;
         }
     }
-    drawPixels();
+    drawBalls();
     canvas.setImage(pixels);
     frameCount++;
     requestAnimationFrame(frame);
 }
-initFero();
-initTracers();
+initBalls();
 
 console.time();
 requestAnimationFrame(frame);

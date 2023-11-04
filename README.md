@@ -1,14 +1,16 @@
-# Slime simulation on GPU
+# GPU-Powered Slime Simulation with Taichi.js
 
-The goal of this project is to recreate a "slime simulation" like in the [coding adventure's video](https://www.youtube.com/watch?v=X-iSQQgOd1A) using [taichi.js](https://github.com/AmesingFlank/taichi.js) to parallelize calculations on GPU.
+The objective of this project is to replicate a "slime simulation" similar to the one demonstrated in the [coding adventure's video](https://www.youtube.com/watch?v=X-iSQQgOd1A) using [taichi.js](https://github.com/AmesingFlank/taichi.js) for parallelizing computations on the GPU.
+This project was meticulously crafted on a GTX 1080ti, but fear not if your GPU boasts different specifications. Adjust the simulation size, the number of tracers, and the update frequency per frame to your hardware.
 
-Taichi.js uses the WIP [WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/) API, check the documentation to enable it on your browser.
+## Getting Started
 
-This project was developed on a GTX 1080ti, if your GPU has more or less VRAM you can play with the size of the simulation and the amount of tracers, and if it is less or more powerful you can play with the amount update per frame.
+Ensure your browser supports [WebGPU](https://developer.chrome.com/docs/web-platform/webgpu/) API. Powered by [taichi.js](https://github.com/AmesingFlank/taichi.js)
 
-## Installation
+## Installation Guide
 
-- `pnpm run install`
+1. Clone the repository.
+2. Run `pnpm run install` to set the stage for your adventure.
 
 ## Run
 

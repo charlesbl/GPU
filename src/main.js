@@ -9,7 +9,7 @@ import {
 import { getFeros, getFeroKernels } from "./fero";
 import { initSettingsPanel } from "./settings";
 
-const SIZE = 950;
+const SIZE = 900;
 const NB_TRACERS = 1_000_000;
 
 const [
